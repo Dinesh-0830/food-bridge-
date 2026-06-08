@@ -244,3 +244,32 @@ export const updateNgoProfile = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Error updating NGO profile documents' });
   }
 };
+
+export const getVolunteersForNgo = async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        role: Role.VOLUNTEER,
+        status: 'APPROVED'
+      },
+      include: {
+        volunteer: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const formatted = users.map((u) => ({
+      id: u.id,
+      email: u.email,
+      role: u.role,
+      status: u.status,
+      createdAt: u.createdAt,
+      profile: u.volunteer
+    }));
+
+    return res.json({ users: formatted });
+  } catch (error) {
+    console.error('Error fetching volunteers for NGO:', error);
+    return res.status(500).json({ message: 'Internal server error fetching volunteers' });
+  }
+};

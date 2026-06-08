@@ -37,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           { to: '/ngo/tracking', label: 'Live Tracking Map', icon: <Map size={18} /> },
           { to: '/ngo/verify', label: 'Verify Deliveries', icon: <ShieldCheck size={18} /> },
           { to: '/ngo/emergency', label: 'Emergency Requests', icon: <Activity size={18} /> },
+          { to: '/ngo/transfer', label: 'NGO Transfer Hub', icon: <HeartHandshake size={18} /> },
           {to: '/ngo/hubs', label: 'Fridge & Cold Storage', icon: <Activity size={18} /> },
           { to: '/ngo/heatmap', label: 'Hunger Heatmap', icon: <Flame size={18} /> },
           { to: '/ngo/leaderboard', label: 'Leaderboard', icon: <Trophy size={18} /> },

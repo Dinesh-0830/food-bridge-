@@ -125,6 +125,8 @@ const LeaderboardView: React.FC = () => {
 const VolunteerAchievementsView: React.FC = () => {
   const [achievements, setAchievements] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchAchievements = async () => {
@@ -144,7 +146,7 @@ const VolunteerAchievementsView: React.FC = () => {
     return (
       <div className="p-12 text-center flex flex-col items-center justify-center gap-3">
         <Loader2 className="animate-spin text-emerald-500" size={32} />
-        <p className="text-xs text-slate-400 font-bold">Loading achievements...</p>
+        <p className="text-xs text-slate-400 font-bold">Loading achievements Center...</p>
       </div>
     );
   }
@@ -159,9 +161,17 @@ const VolunteerAchievementsView: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8 animate-fade-in text-left">
-      <div>
-        <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-wider">Achievements Center</h2>
-        <p className="text-xs text-slate-400 mt-1">Track your impact, delivery distance, hours served, and rewards.</p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-wider">Achievements Center</h2>
+          <p className="text-xs text-slate-400 mt-1">Track your impact, delivery distance, hours served, and rewards.</p>
+        </div>
+        <button
+          onClick={() => setShowResumeModal(true)}
+          className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-emerald-500/10 hover-scale transition-all"
+        >
+          📄 Generate Impact Resume
+        </button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -204,6 +214,88 @@ const VolunteerAchievementsView: React.FC = () => {
           )) || <p className="text-xs text-slate-450 italic">No achievements badges awarded yet.</p>}
         </div>
       </div>
+
+      {/* Volunteer Impact Resume & Certificate Modal */}
+      {showResumeModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 max-w-2xl w-full shadow-2xl relative flex flex-col gap-6 animate-scale-up">
+            <button 
+              onClick={() => setShowResumeModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-650 dark:hover:text-white rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              ✕
+            </button>
+
+            <div className="text-center border-b border-dashed border-slate-200 dark:border-slate-800 pb-6">
+              <span className="text-[10px] font-extrabold uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full">
+                FoodBridge Impact Verification
+              </span>
+              <h2 className="text-xl font-black mt-3 text-slate-800 dark:text-white uppercase tracking-wide">
+                Social Impact Resume & Certificate
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">Verified community service and food rescue hours in Tirupati</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 text-xs">
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl flex flex-col gap-1 text-left">
+                <span className="text-slate-400 font-bold uppercase text-[9px]">Volunteer Name</span>
+                <span className="text-sm font-extrabold text-slate-800 dark:text-white">{user?.profile?.fullName || 'Active Volunteer'}</span>
+                <span className="text-slate-400 text-[10px] truncate">{user?.email}</span>
+              </div>
+              <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl flex flex-col gap-1 text-left">
+                <span className="text-slate-400 font-bold uppercase text-[9px]">Service ID</span>
+                <span className="text-sm font-extrabold text-slate-800 dark:text-white font-mono">{achievements?.id?.substring(0, 13) || 'FDB-VOL-738'}</span>
+                <span className="text-slate-400 text-[10px]">Active Status: {user?.status || 'APPROVED'}</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              <div className="bg-emerald-500/5 p-3 rounded-2xl border border-emerald-500/10 flex flex-col justify-center">
+                <span className="text-[9px] text-slate-400 font-bold">RESCUES DONE</span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-1">{achievements?.deliveries || 0}</span>
+              </div>
+              <div className="bg-emerald-500/5 p-3 rounded-2xl border border-emerald-500/10 flex flex-col justify-center">
+                <span className="text-[9px] text-slate-400 font-bold">TOTAL DISTANCE</span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-1">{(achievements?.distance || 0.0).toFixed(1)} km</span>
+              </div>
+              <div className="bg-emerald-500/5 p-3 rounded-2xl border border-emerald-500/10 flex flex-col justify-center">
+                <span className="text-[9px] text-slate-400 font-bold">HOURS SERVED</span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-1">{(achievements?.hours || 0.0).toFixed(1)} hrs</span>
+              </div>
+              <div className="bg-emerald-500/5 p-3 rounded-2xl border border-emerald-500/10 flex flex-col justify-center">
+                <span className="text-[9px] text-slate-400 font-bold">CO₂ DECREASED</span>
+                <span className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-1">{((achievements?.deliveries || 0) * 12.5).toFixed(1)} kg</span>
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col gap-2 text-xs text-left">
+              <span className="font-bold text-slate-850 dark:text-white">Achievements & Badges</span>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {achievements?.badges?.map((badge: string) => (
+                  <span key={badge} className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold px-2 py-0.5 rounded-full">
+                    {badge}
+                  </span>
+                )) || <span className="text-slate-400 text-[10px]">No badges earned yet.</span>}
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => window.print()}
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs hover-scale text-center"
+              >
+                Print / Save PDF Certificate
+              </button>
+              <button
+                onClick={() => setShowResumeModal(false)}
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold rounded-xl text-xs hover-scale text-center"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

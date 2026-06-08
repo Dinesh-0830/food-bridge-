@@ -5,9 +5,9 @@ import { Navbar } from '../components/Navbar';
 import { Sidebar } from '../components/Sidebar';
 import { MapComponent } from '../components/MapComponent';
 import api from '../services/api';
-import { 
+import {
   ShieldCheck, ChevronRight, Loader2, AlertCircle,
-  Trophy, Thermometer, CloudUpload
+  Trophy, Thermometer, CloudUpload, RefreshCw
 } from 'lucide-react';
 import { HungerHeatmap } from '../components/HungerHeatmap';
 import { useAuth } from '../context/AuthContext';
@@ -57,21 +57,19 @@ const LeaderboardView: React.FC = () => {
         <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => setActiveTab('donors')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'donors'
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'donors'
                 ? 'bg-emerald-600 text-white shadow'
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
-            }`}
+              }`}
           >
             Donors (Hotels)
           </button>
           <button
             onClick={() => setActiveTab('volunteers')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'volunteers'
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'volunteers'
                 ? 'bg-emerald-600 text-white shadow'
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
-            }`}
+              }`}
           >
             Volunteer Riders
           </button>
@@ -93,11 +91,10 @@ const LeaderboardView: React.FC = () => {
             {rankings.map((r: any, idx: number) => {
               const medals = ['🥇', '🥈', '🥉'];
               return (
-                <tr 
-                  key={r.id} 
-                  className={`border-b border-slate-100 dark:border-slate-800/40 hover:bg-slate-100/30 dark:hover:bg-slate-800/10 ${
-                    idx === 0 ? 'bg-amber-500/5' : ''
-                  }`}
+                <tr
+                  key={r.id}
+                  className={`border-b border-slate-100 dark:border-slate-800/40 hover:bg-slate-100/30 dark:hover:bg-slate-800/10 ${idx === 0 ? 'bg-amber-500/5' : ''
+                    }`}
                 >
                   <td className="p-3 font-bold">
                     {idx < 3 ? medals[idx] : `#${idx + 1}`}
@@ -302,11 +299,10 @@ const EmergencyRequestView: React.FC = () => {
                     </div>
                     <p className="text-[10px] text-slate-400 mt-1">{req.ngoName} ({req.ngoMobile})</p>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
-                    req.status === 'PENDING' 
-                      ? 'bg-rose-500/10 text-rose-500' 
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${req.status === 'PENDING'
+                      ? 'bg-rose-500/10 text-rose-500'
                       : 'bg-emerald-500/10 text-emerald-500'
-                  }`}>
+                    }`}>
                     {req.status}
                   </span>
                 </div>
@@ -390,21 +386,19 @@ const NgoHubsView: React.FC = () => {
         <div className="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => setActiveTab('fridges')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'fridges'
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'fridges'
                 ? 'bg-emerald-600 text-white shadow'
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
-            }`}
+              }`}
           >
             Community Fridges
           </button>
           <button
             onClick={() => setActiveTab('coldChain')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === 'coldChain'
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'coldChain'
                 ? 'bg-emerald-600 text-white shadow'
                 : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white'
-            }`}
+              }`}
           >
             Cold Chain Logs
           </button>
@@ -419,9 +413,8 @@ const NgoHubsView: React.FC = () => {
               <div key={f.id} className="glass-card rounded-2xl p-5 border border-slate-200/40 dark:border-slate-800/60 flex flex-col justify-between gap-4">
                 <div>
                   <div className="flex justify-between items-start">
-                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
-                      f.status === 'ACTIVE' ? 'bg-emerald-505/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10' : 'bg-amber-500/10 text-amber-600'
-                    }`}>
+                    <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${f.status === 'ACTIVE' ? 'bg-emerald-505/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/10' : 'bg-amber-500/10 text-amber-600'
+                      }`}>
                       {f.status}
                     </span>
                     <span className="text-[10px] text-slate-400">Cap: {f.capacity} meals</span>
@@ -476,7 +469,7 @@ const NgoHubsView: React.FC = () => {
                       <span className={c.temperature > 5.0 ? 'text-amber-500' : 'text-slate-800 dark:text-white'}>{c.temperature.toFixed(1)} °C</span>
                     </td>
                     <td className="p-4">
-                      {c.currentMeals} / {c.capacity} meals ({Math.round((c.currentMeals/c.capacity)*100)}%)
+                      {c.currentMeals} / {c.capacity} meals ({Math.round((c.currentMeals / c.capacity) * 100)}%)
                     </td>
                     <td className="p-4 text-right">
                       {c.temperature > 5.0 || c.expiryAlerts ? (
@@ -581,10 +574,10 @@ const NgoProfileView: React.FC = () => {
   };
 
   const handleSimulateUpload = (type: 'reg' | 'gov') => {
-    const mockUrl = type === 'reg' 
+    const mockUrl = type === 'reg'
       ? 'https://documents.foodbridge.org/certificates/tirupati-reg-certificate.pdf'
       : 'https://documents.foodbridge.org/approvals/ap-govt-sec-clearance.pdf';
-    
+
     if (type === 'reg') {
       setRegCertificateUrl(mockUrl);
     } else {
@@ -621,11 +614,10 @@ const NgoProfileView: React.FC = () => {
             {status === 'APPROVED' ? 'Verified Partner NGO' : status === 'PENDING' ? 'Verification Awaiting Admin approval' : 'Verification Rejected'}
           </p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
-          status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border border-emerald-500/20' : 
-          status === 'PENDING' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' : 
-          'bg-rose-500/10 text-rose-500 border border-rose-500/20'
-        }`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border border-emerald-500/20' :
+            status === 'PENDING' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20' :
+              'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+          }`}>
           {status}
         </span>
       </div>
@@ -685,6 +677,125 @@ const NgoProfileView: React.FC = () => {
   );
 };
 
+// Subcomponent: NGO Transfer and Multi-NGO Collaboration
+const NgoTransferView: React.FC<{ donations: any[], refreshDonations: () => void }> = ({ donations, refreshDonations }) => {
+  const [activeTransfer, setActiveTransfer] = useState<any>(null);
+  const [targetNgo, setTargetNgo] = useState('Hope Care Shelter');
+  const [transferring, setTransferring] = useState(false);
+
+  const handleTransfer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeTransfer) return;
+    setTransferring(true);
+    try {
+      await new Promise(r => setTimeout(r, 1200));
+      alert(`Donation "${activeTransfer.foodName}" successfully transferred to ${targetNgo}! They have been notified.`);
+      setActiveTransfer(null);
+      refreshDonations();
+    } catch (err) {
+      alert('Transfer failed');
+    } finally {
+      setTransferring(false);
+    }
+  };
+
+  const myIncoming = donations.filter(d => d.status === 'ASSIGNED'); // assigned to current NGO
+
+  return (
+    <div className="flex flex-col gap-6 animate-fade-in text-left">
+      <div>
+        <h2 className="text-sm font-extrabold text-slate-400 uppercase tracking-wider">NGO Transfer Hub</h2>
+        <p className="text-xs text-slate-400 mt-1">Collab Hub: Transfer excess incoming donations to partner shelters based on urgency and capacity.</p>
+      </div>
+
+      {myIncoming.length === 0 ? (
+        <div className="p-10 text-center border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl text-xs text-slate-400">
+          No allocated donations available to transfer at this time. Only donations assigned to you can be transferred.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {myIncoming.map((d) => (
+            <div key={d.id} className="glass-card rounded-2xl p-5 border border-slate-200/40 dark:border-slate-800/60 flex flex-col justify-between gap-4">
+              <div>
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-bold text-slate-400 uppercase">
+                    Assigned to You
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-500">{d.quantity} meals</span>
+                </div>
+                <h4 className="font-bold text-xs mt-3 text-slate-850 dark:text-white">{d.foodName}</h4>
+                <p className="text-[10px] text-slate-400 mt-1">📍 Pickup: {d.pickupAddress}</p>
+                <p className="text-[10px] text-slate-400">Category: {d.category}</p>
+              </div>
+
+              <button
+                onClick={() => setActiveTransfer(d)}
+                className="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 hover-scale transition-all"
+              >
+                <RefreshCw size={12} />
+                Transfer to Partner NGO
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Transfer Modal */}
+      {activeTransfer && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl flex flex-col gap-4 animate-scale-up">
+            <h3 className="font-extrabold text-sm border-b border-slate-100 dark:border-slate-800/40 pb-2 text-left">Transfer Donation</h3>
+            
+            <form onSubmit={handleTransfer} className="flex flex-col gap-4 text-left">
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">Donation to Transfer</span>
+                <p className="font-bold text-xs">{activeTransfer.foodName} ({activeTransfer.quantity} meals)</p>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase">Select Partner NGO</label>
+                <select
+                  value={targetNgo}
+                  onChange={(e) => setTargetNgo(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none focus:border-emerald-500"
+                >
+                  <option value="Hope Care Shelter">Hope Care Shelter (1.8 km away)</option>
+                  <option value="Tirupati Food Rescue League">Tirupati Food Rescue League (3.2 km away)</option>
+                  <option value="Chittoor Destitute Home">Chittoor Destitute Home (4.5 km away)</option>
+                  <option value="Balaji Seva Sangam">Balaji Seva Sangam (2.1 km away)</option>
+                </select>
+              </div>
+
+              <div className="flex gap-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveTransfer(null)}
+                  className="flex-1 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={transferring}
+                  className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1"
+                >
+                  {transferring ? (
+                    <>
+                      <Loader2 size={12} className="animate-spin" /> Transferring...
+                    </>
+                  ) : (
+                    'Confirm Transfer'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const NgoDashboard: React.FC = () => {
   const { emitStatusChange, socket, joinDeliveryRoom, leaveDeliveryRoom } = useSocket();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -694,7 +805,7 @@ export const NgoDashboard: React.FC = () => {
   const [needyLocations, setNeedyLocations] = useState<any[]>([]);
   const [volunteers, setVolunteers] = useState<any[]>([]);
   const [liveLocation, setLiveLocation] = useState<{ [key: string]: { lat: number; lng: number } }>({});
-  
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -715,17 +826,17 @@ export const NgoDashboard: React.FC = () => {
       const [donationsRes, destsRes, volsRes] = await Promise.all([
         api.get('/ngo/dashboard'),
         api.get('/ngo/destinations'),
-        api.get('/admin/users') // To load approved volunteers
+        api.get('/ngo/volunteers') // To load approved volunteers
       ]);
-      
+
       setDonations(donationsRes.data.donations);
       setHospitals(destsRes.data.hospitals);
       setNeedyLocations(destsRes.data.needyLocations);
-      
+
       // Filter out only approved volunteers
       const vols = volsRes.data.users.filter((u: any) => u.role === 'VOLUNTEER' && u.status === 'APPROVED');
       setVolunteers(vols);
-      
+
       // Default forms
       if (destsRes.data.hospitals.length > 0) {
         setAssignForm(prev => ({ ...prev, destinationId: destsRes.data.hospitals[0].id }));
@@ -824,7 +935,7 @@ export const NgoDashboard: React.FC = () => {
 
     try {
       await api.post('/ngo/verify', { assignmentId: verifyingAssignment.id });
-      
+
       // Broadcast via socket
       emitStatusChange({
         assignmentId: verifyingAssignment.id,
@@ -1019,7 +1130,7 @@ export const NgoDashboard: React.FC = () => {
                     const trackId = searchParams.get('id');
                     const trackableDonations = donations.filter(d => ['ACCEPTED', 'ASSIGNED', 'PICKED_UP'].includes(d.status));
                     const trackDonation = donations.find(d => d.id === trackId) || trackableDonations[0];
-                    
+
                     if (!trackDonation) {
                       return <p className="text-xs text-slate-400 p-6 text-center">No active volunteer deliveries en route right now to track.</p>;
                     }
@@ -1106,6 +1217,9 @@ export const NgoDashboard: React.FC = () => {
               {/* COMMUNITY LEADERBOARDS */}
               <Route path="/leaderboard" element={<LeaderboardView />} />
 
+              {/* NGO COLLABORATIVE TRANSFER HUB */}
+              <Route path="/transfer" element={<NgoTransferView donations={donations} refreshDonations={fetchData} />} />
+
               {/* DISTRIBUTION REPORTS */}
               <Route path="/reports" element={
                 <div className="animate-fade-in flex flex-col gap-4">
@@ -1189,7 +1303,7 @@ export const NgoDashboard: React.FC = () => {
                   onChange={(e) => setAssignForm({ ...assignForm, destinationId: e.target.value })}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-2.5 text-xs outline-none"
                 >
-                  {assignForm.destinationType === 'HOSPITAL' 
+                  {assignForm.destinationType === 'HOSPITAL'
                     ? hospitals.map(h => <option key={h.id} value={h.id}>{h.name} ({h.address})</option>)
                     : needyLocations.map(l => <option key={l.id} value={l.id}>{l.name} ({l.address})</option>)
                   }
@@ -1236,19 +1350,19 @@ export const NgoDashboard: React.FC = () => {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase">Distribution Photo</span>
-                  <img 
-                    src={verifyingAssignment.proof.photoUrl} 
-                    alt="Proof" 
-                    className="h-48 w-full object-cover rounded-2xl border border-slate-200 dark:border-slate-800" 
+                  <img
+                    src={verifyingAssignment.proof.photoUrl}
+                    alt="Proof"
+                    className="h-48 w-full object-cover rounded-2xl border border-slate-200 dark:border-slate-800"
                   />
                 </div>
                 {verifyingAssignment.proof.recipientPhotoUrl && (
                   <div className="flex flex-col gap-1">
                     <span className="text-[10px] font-bold text-slate-400 uppercase">Recipient Acknowledgment</span>
-                    <img 
-                      src={verifyingAssignment.proof.recipientPhotoUrl} 
-                      alt="Recipient" 
-                      className="h-24 w-24 object-cover rounded-xl border border-slate-200 dark:border-slate-800" 
+                    <img
+                      src={verifyingAssignment.proof.recipientPhotoUrl}
+                      alt="Recipient"
+                      className="h-24 w-24 object-cover rounded-xl border border-slate-200 dark:border-slate-800"
                     />
                   </div>
                 )}

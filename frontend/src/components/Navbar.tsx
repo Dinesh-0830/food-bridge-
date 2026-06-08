@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
-import { Bell, Moon, Sun, LogOut, Menu, User as UserIcon, ShieldAlert } from 'lucide-react';
+import { Bell, Moon, Sun, LogOut, Menu, User as UserIcon, ShieldAlert, Mic, Loader2 } from 'lucide-react';
 
 interface NavbarProps {
   toggleSidebar?: () => void;
@@ -19,6 +19,95 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   });
 
   const navigate = useNavigate();
+
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState<'idle' | 'listening' | 'processing' | 'success' | 'error'>('idle');
+  const [voiceText, setVoiceText] = useState('');
+  const [voiceLanguage, setVoiceLanguage] = useState<'en' | 'te' | 'hi'>('en');
+  const [voiceError, setVoiceError] = useState('');
+
+  const startSpeechRecognition = () => {
+    setVoiceText('');
+    setVoiceError('');
+    
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceStatus('error');
+      setVoiceError('Speech recognition is not supported in this browser. Please type your voice request below.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    if (voiceLanguage === 'te') {
+      recognition.lang = 'te-IN'; // Telugu
+    } else if (voiceLanguage === 'hi') {
+      recognition.lang = 'hi-IN'; // Hindi
+    } else {
+      recognition.lang = 'en-US'; // English
+    }
+
+    recognition.onstart = () => {
+      setVoiceStatus('listening');
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error', event.error);
+      setVoiceStatus('error');
+      setVoiceError(`Voice detection failed: ${event.error}. Please try again or type below.`);
+    };
+
+    recognition.onresult = (event: any) => {
+      const resultText = event.results[0][0].transcript;
+      setVoiceText(resultText);
+      processVoiceCommand(resultText);
+    };
+
+    recognition.start();
+  };
+
+  const processVoiceCommand = (text: string) => {
+    setVoiceStatus('processing');
+    
+    setTimeout(() => {
+      const cleanText = text.toLowerCase();
+      let qty = 30;
+      const matchNumber = cleanText.match(/\d+/);
+      if (matchNumber) {
+        qty = parseInt(matchNumber[0]);
+      } else {
+        if (cleanText.includes('fifty') || cleanText.includes('యాభై') || cleanText.includes('पचास')) qty = 50;
+        else if (cleanText.includes('twenty') || cleanText.includes('ఇరవై') || cleanText.includes('बीस')) qty = 20;
+        else if (cleanText.includes('ten') || cleanText.includes('పది') || cleanText.includes('दस')) qty = 10;
+        else if (cleanText.includes('hundred') || cleanText.includes('వంద') || cleanText.includes('सौ')) qty = 100;
+      }
+
+      setVoiceStatus('success');
+
+      if (cleanText.includes('donate') || cleanText.includes('surplus') || cleanText.includes('food') || cleanText.includes('దానం') || cleanText.includes('భోజనం') || cleanText.includes('दान') || cleanText.includes('भोजन')) {
+        setShowVoiceModal(false);
+        navigate(`/donor/create?foodName=Voice%20Surplus%20Donation&quantity=${qty}&notes=Created%20via%2520Voice%2520AI%2520Assistant%2520(${text})`);
+      } else if (cleanText.includes('map') || cleanText.includes('track') || cleanText.includes('route') || cleanText.includes('మ్యాప్') || cleanText.includes('మార్గం') || cleanText.includes('नक्शा') || cleanText.includes('मार्ग')) {
+        setShowVoiceModal(false);
+        if (user?.role === 'VOLUNTEER') navigate('/volunteer/map');
+        else if (user?.role === 'NGO') navigate('/ngo/tracking');
+        else navigate('/donor/track');
+      } else if (cleanText.includes('predict') || cleanText.includes('leftover') || cleanText.includes('అంచనా') || cleanText.includes('पूर्वानुमान')) {
+        setShowVoiceModal(false);
+        navigate('/donor/predict');
+      } else if (cleanText.includes('leaderboard') || cleanText.includes('points') || cleanText.includes('స్థానం') || cleanText.includes('रैंकिंग')) {
+        setShowVoiceModal(false);
+        navigate(`/${user?.role?.toLowerCase()}/leaderboard`);
+      } else {
+        setVoiceStatus('idle');
+        alert(`Recognized: "${text}". Redirecting to your dashboard...`);
+        setShowVoiceModal(false);
+        navigate(getDashboardPath());
+      }
+    }, 1200);
+  };
 
   useEffect(() => {
     if (darkMode) {
@@ -81,6 +170,22 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         >
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
+
+        {/* Voice AI Assistant Button */}
+        {user && (
+          <button
+            onClick={() => {
+              setShowVoiceModal(true);
+              setVoiceStatus('idle');
+              setVoiceText('');
+              setVoiceError('');
+            }}
+            className="p-2.5 text-emerald-600 hover:text-emerald-500 hover:bg-emerald-500/10 dark:text-emerald-450 dark:hover:text-emerald-400 dark:hover:bg-emerald-400/5 rounded-xl transition-all flex items-center justify-center"
+            title="Voice AI Assistant"
+          >
+            <Mic size={18} className="animate-pulse" />
+          </button>
+        )}
 
         {user ? (
           <>
@@ -205,6 +310,136 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
           </div>
         )}
       </div>
+
+      {/* Voice AI Assistant Modal */}
+      {showVoiceModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl relative flex flex-col items-center gap-4 text-center animate-scale-up">
+            <button 
+              onClick={() => setShowVoiceModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-650 dark:hover:text-white rounded-full hover:bg-slate-100 dark:hover:bg-slate-850"
+            >
+              ✕
+            </button>
+
+            <h3 className="font-extrabold text-sm flex items-center gap-1.5 mt-2">
+              <Mic size={18} className="text-emerald-500 animate-pulse" />
+              Voice AI Assistant
+            </h3>
+            <p className="text-xs text-slate-400">
+              Speak or type commands to navigate, schedule, or list donations instantly in English, Telugu, or Hindi.
+            </p>
+
+            <div className="flex gap-2 bg-slate-100 dark:bg-slate-955 p-1 rounded-xl border border-slate-200/50 dark:border-slate-800 w-full justify-center">
+              <button 
+                type="button"
+                onClick={() => setVoiceLanguage('en')}
+                className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${voiceLanguage === 'en' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-slate-700'}`}
+              >
+                English
+              </button>
+              <button 
+                type="button"
+                onClick={() => setVoiceLanguage('te')}
+                className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${voiceLanguage === 'te' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-slate-700'}`}
+              >
+                తెలుగు (Telugu)
+              </button>
+              <button 
+                type="button"
+                onClick={() => setVoiceLanguage('hi')}
+                className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${voiceLanguage === 'hi' ? 'bg-emerald-600 text-white shadow' : 'text-slate-400 hover:text-slate-700'}`}
+              >
+                हिन्दी (Hindi)
+              </button>
+            </div>
+
+            {/* Mic wave visuals depending on status */}
+            <div className="w-full h-32 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-150 dark:border-slate-850 relative overflow-hidden p-4">
+              {voiceStatus === 'idle' && (
+                <button
+                  type="button"
+                  onClick={startSpeechRecognition}
+                  className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 p-5 rounded-full hover-scale cursor-pointer flex items-center justify-center border border-emerald-500/20"
+                >
+                  <Mic size={28} />
+                </button>
+              )}
+
+              {voiceStatus === 'listening' && (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex gap-1.5 items-center justify-center">
+                    <span className="w-1 bg-emerald-500 h-8 rounded-full animate-bounce delay-100" />
+                    <span className="w-1 bg-emerald-500 h-12 rounded-full animate-bounce delay-300" />
+                    <span className="w-1 bg-emerald-500 h-10 rounded-full animate-bounce delay-200" />
+                    <span className="w-1 bg-emerald-500 h-6 rounded-full animate-bounce delay-500" />
+                    <span className="w-1 bg-emerald-500 h-12 rounded-full animate-bounce delay-400" />
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 animate-pulse">Listening... Speak now</span>
+                </div>
+              )}
+
+              {voiceStatus === 'processing' && (
+                <div className="flex flex-col items-center gap-3">
+                  <Loader2 className="animate-spin text-emerald-500" size={28} />
+                  <span className="text-[10px] font-bold text-slate-400">Processing with NLP Engine...</span>
+                </div>
+              )}
+
+              {voiceStatus === 'success' && (
+                <div className="flex flex-col items-center gap-1.5 text-emerald-655 dark:text-emerald-400">
+                  <span className="text-xl">🎉</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Command Understood! Redirecting...</span>
+                </div>
+              )}
+
+              {voiceStatus === 'error' && (
+                <div className="p-3 text-[10px] text-rose-500 bg-rose-500/5 rounded-xl border border-rose-500/10 max-h-24 overflow-y-auto">
+                  ⚠️ {voiceError}
+                </div>
+              )}
+
+              {voiceText && (
+                <p className="absolute bottom-2 text-[10px] font-medium text-slate-450 italic max-w-[90%] truncate mt-1">
+                  "{voiceText}"
+                </p>
+              )}
+            </div>
+
+            {/* Input Fallback */}
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                const textInput = (e.target as any).elements.voiceQuery.value;
+                if (textInput.trim()) {
+                  setVoiceText(textInput);
+                  processVoiceCommand(textInput);
+                }
+              }}
+              className="flex gap-2 w-full mt-1"
+            >
+              <input 
+                type="text" 
+                name="voiceQuery"
+                placeholder="Type fallback command (e.g. donate 50 meals)..."
+                className="flex-1 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs outline-none focus:border-emerald-500"
+              />
+              <button 
+                type="submit" 
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs"
+              >
+                Send
+              </button>
+            </form>
+
+            <div className="text-[9px] text-slate-450 text-left w-full border-t border-slate-100 dark:border-slate-800/40 pt-3 flex flex-col gap-1">
+              <p>💡 English: <strong>"Donate 50 meals"</strong> or <strong>"Show maps"</strong></p>
+              <p>💡 Telugu: <strong>"యాభై భోజనాలు దానం"</strong> or <strong>"మ్యాప్ చూపించు"</strong></p>
+              <p>💡 Hindi: <strong>"पचास भोजन दान"</strong> or <strong>"नक्शा दिखाओ"</strong></p>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };
