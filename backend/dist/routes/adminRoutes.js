@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const adminController_1 = require("../controllers/adminController");
+const auth_1 = require("../middleware/auth");
+const enums_1 = require("../types/enums");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticate);
+router.use((0, auth_1.restrictTo)(enums_1.Role.ADMIN));
+router.get('/users', adminController_1.getAllUsers);
+router.put('/users/:id/approve', adminController_1.approveUser);
+router.put('/ngos/:id/approve-docs', adminController_1.approveNgoDocs);
+router.get('/analytics', adminController_1.getAnalytics);
+exports.default = router;

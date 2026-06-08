@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const authRoutes_1 = __importDefault(require("./authRoutes"));
+const donationRoutes_1 = __importDefault(require("./donationRoutes"));
+const ngoRoutes_1 = __importDefault(require("./ngoRoutes"));
+const volunteerRoutes_1 = __importDefault(require("./volunteerRoutes"));
+const adminRoutes_1 = __importDefault(require("./adminRoutes"));
+const featureRoutes_1 = __importDefault(require("./featureRoutes"));
+const apiRoutes_1 = __importDefault(require("./apiRoutes"));
+const router = (0, express_1.Router)();
+router.use('/auth', authRoutes_1.default);
+router.use('/donations', donationRoutes_1.default);
+router.use('/ngo', ngoRoutes_1.default);
+router.use('/volunteer', volunteerRoutes_1.default);
+router.use('/admin', adminRoutes_1.default);
+router.use('/api/v1', apiRoutes_1.default);
+router.use('/', featureRoutes_1.default);
+exports.default = router;
