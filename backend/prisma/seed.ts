@@ -1,6 +1,7 @@
+/// <reference types="node" />
 import { PrismaClient } from '@prisma/client';
 import { Role, DonationStatus, VolunteerStatus } from '../src/types/enums';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 

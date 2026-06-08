@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logout = exports.getMe = exports.login = exports.register = void 0;
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = __importDefault(require("../config/db"));
 const enums_1 = require("../types/enums");
@@ -27,7 +27,7 @@ const register = async (req, res) => {
         if (!Object.values(enums_1.Role).includes(role)) {
             return res.status(400).json({ message: 'Invalid role specified' });
         }
-        const hashedPassword = await bcrypt_1.default.hash(password, 10);
+        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
         // Initial status for volunteers/NGOs/Orgs could be pending or pre-approved depending on setup
         // For demo purposes, we will default individual donors and admin to APPROVED, and others to APPROVED as well (or PENDING if requested, let's make NGOs and Volunteers start as PENDING so Admin Dashboard has approval workflows to demo!)
         // Yes! Let's make ORGANIZATION_DONOR, VOLUNTEER, NGO start as PENDING, so the admin approval feature is fully demonstrated. Individual donors and admins are APPROVED immediately.
@@ -153,7 +153,7 @@ const login = async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
-        const isMatch = await bcrypt_1.default.compare(password, user.password);
+        const isMatch = await bcryptjs_1.default.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
