@@ -44,8 +44,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       return;
     }
 
-    // Connect to local Socket.IO server (relies on Vite proxy during development)
-    const newSocket = io(window.location.origin, {
+    // Connect to production or local Socket.IO server
+    const BACKEND_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? window.location.origin : 'https://food-bridge-backend-ba8c.onrender.com');
+
+    const newSocket = io(BACKEND_URL, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
     });
