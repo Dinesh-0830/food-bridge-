@@ -4,13 +4,13 @@
   "description": "FoodBridge backend service connecting surplus food to needy people",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "node prisma/setup-db.js sqlite && npx prisma generate && nodemon src/server.ts",
-    "build": "node prisma/setup-db.js postgres && npx prisma generate && tsc",
+    "dev": "node prisma/setup-db.js sqlite && npx prisma@5.14.0 generate && nodemon src/server.ts",
+    "build": "node prisma/setup-db.js postgres && npx prisma@5.14.0 generate && tsc",
     "start": "node dist/server.js",
     "preview": "npm run start",
-    "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx prisma migrate dev",
-    "prisma:migrate:deploy": "npx prisma migrate deploy",
+    "prisma:generate": "npx prisma@5.14.0 generate",
+    "prisma:migrate": "npx prisma@5.14.0 migrate dev",
+    "prisma:migrate:deploy": "npx prisma@5.14.0 migrate deploy",
     "prisma:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
