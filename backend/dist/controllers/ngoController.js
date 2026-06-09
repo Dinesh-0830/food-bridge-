@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateNgoProfile = exports.verifyDelivery = exports.assignDestinationAndVolunteer = exports.getDestinations = exports.getNgoDashboardData = void 0;
+exports.getVolunteersForNgo = exports.updateNgoProfile = exports.verifyDelivery = exports.assignDestinationAndVolunteer = exports.getDestinations = exports.getNgoDashboardData = void 0;
 const db_1 = __importDefault(require("../config/db"));
 const enums_1 = require("../types/enums");
 const getNgoDashboardData = async (req, res) => {
@@ -224,3 +224,31 @@ const updateNgoProfile = async (req, res) => {
     }
 };
 exports.updateNgoProfile = updateNgoProfile;
+const getVolunteersForNgo = async (req, res) => {
+    try {
+        const users = await db_1.default.user.findMany({
+            where: {
+                role: enums_1.Role.VOLUNTEER,
+                status: 'APPROVED'
+            },
+            include: {
+                volunteer: true
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        const formatted = users.map((u) => ({
+            id: u.id,
+            email: u.email,
+            role: u.role,
+            status: u.status,
+            createdAt: u.createdAt,
+            profile: u.volunteer
+        }));
+        return res.json({ users: formatted });
+    }
+    catch (error) {
+        console.error('Error fetching volunteers for NGO:', error);
+        return res.status(500).json({ message: 'Internal server error fetching volunteers' });
+    }
+};
+exports.getVolunteersForNgo = getVolunteersForNgo;

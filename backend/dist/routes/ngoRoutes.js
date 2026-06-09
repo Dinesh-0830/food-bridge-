@@ -10,6 +10,7 @@ router.use(auth_1.requireApproval);
 router.use((0, auth_1.restrictTo)(enums_1.Role.NGO, enums_1.Role.ADMIN));
 router.get('/dashboard', ngoController_1.getNgoDashboardData);
 router.get('/destinations', ngoController_1.getDestinations);
+router.get('/volunteers', ngoController_1.getVolunteersForNgo);
 router.post('/assign', ngoController_1.assignDestinationAndVolunteer);
 router.post('/verify', ngoController_1.verifyDelivery);
 router.put('/profile', ngoController_1.updateNgoProfile);
